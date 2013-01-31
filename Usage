@@ -1,0 +1,16 @@
+git config --global user.name "Nome Cognome"
+
+e poi
+
+git config --global user.email "indirizzo@email.com"
+
+git clone https://github.com/emulk/SOS.git
+
+
+ES:
+git add README
+git commit -m 'first commit'
+
+git push
+git pull
+eccecc 
