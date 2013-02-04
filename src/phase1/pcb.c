@@ -75,6 +75,21 @@ void initPcbs(void)
 		freePcb(new);
 	}
 }
+/*funksioni qe ke ber ti larte nuke eshte rikorsiv, po eshte iterativ sepse perdor for, 
+nje funksion eshte rikorsiv kur theret veten
+une thash ta bej ne kete menyr(po nuk e di se eshte korrekt apo jo):*/
+void initPcbs(void)
+{
+	int cont=0;
+
+	// inizializzazione della lista dei processi liberi
+	INIT_LIST_HEAD(&pcbfree_h);
+	struct pcb_t *new = &(pcb_table[count]);
+	freePcb(new);
+	count++;
+	return initPcbs();
+
+}
 
 /*[2]
  * Descrizione: Inserisce il PCB puntato da p 
