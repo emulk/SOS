@@ -78,16 +78,21 @@ void initPcbs(void)
 /*funksioni qe ke ber ti larte nuke eshte rikorsiv, po eshte iterativ sepse perdor for, 
 nje funksion eshte rikorsiv kur theret veten
 une thash ta bej ne kete menyr(po nuk e di se eshte korrekt apo jo):*/
+void Ric_pcbs(int count){
+	struct pcb_t *new= &(pcb_table[count]);
+	freePcb(new);
+}
 void initPcbs(void)
 {
-	int cont=0;
-
+	int cont=-1;
+	count++;
 	// inizializzazione della lista dei processi liberi
 	INIT_LIST_HEAD(&pcbfree_h);
-	struct pcb_t *new = &(pcb_table[count]);
-	freePcb(new);
-	count++;
-	return initPcbs();
+	if(count < MAXPROC){
+		Ric_pcbs(count);
+	} else {
+		return;
+	}
 
 }
 
