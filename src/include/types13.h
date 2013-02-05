@@ -4,7 +4,8 @@
 #include <uMPStypes.h>
 
 // Process Control Block (PCB) data structure
-typedef struct pcb_t {
+typedef struct pcb_t
+{
 	/*process queue fields */
 	struct pcb_t* p_next;
 
