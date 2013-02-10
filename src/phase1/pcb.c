@@ -18,7 +18,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#include <pcb.e>
+#include "../modules/pcb.e"
 
 /* array di pcb con dimensione MAXPROC (MAXPROC = 20) */
 HIDDEN pcb_t pcb_table[MAXPROC];
@@ -120,8 +120,42 @@ struct pcb_t *allocPcb(void)
 
 
 void insertProcQ(struct pcb_t **head, struct pcb_t* p) {}
-struct pcb_t* headProcQ(struct pcb_t* head) { return NULL; }
-struct pcb_t* removeProcQ(struct pcb_t** head) { return NULL; }
+
+/*[5]
+ * Descrizione: Restituisce l'elemento di testa della coda dei processi puntata da head,
+ * senza rimuoverlo, ritorna null se la coda e vuota.
+ * return: null || l'elemento di testa*/
+struct pcb_t* headProcQ(struct pcb_t* head) {
+	pcb_t *tmp;
+	/*Se la sentinella punta a se stessa , significa che la coda e vuota e quindi ritorno null*/
+	if(head->next == head){
+		return NULL;
+	} else {
+		/* assegna l'elemento puntato da head a temp */
+		temp = head->next;
+		return temp;
+	}
+}
+	
+/*[6]
+ * Descrizione: rimuove il primo elemento dalla coda dei processi puntata da head.
+ * Ritorna null se la coda e vuota, altrimenti ritorna il puntatore all'elemento
+ * rimosso dalla lista
+ * return: NULL || puntatore all'elemento rimosso*/
+struct pcb_t* removeProcQ(struct pcb_t** head) { 
+	pcb_t *tmp;
+	/*se la coda e vuota ritorna null*/
+	if(head->next == head){
+		return NULL;
+	} else {
+		temp = head->next;
+		head=tmp->next;
+		return tmp;
+	}
+}
+		
+	
+	return NULL; }
 struct pcb_t* outProcQ(struct pcb_t** head, struct pcb_t *p) { return NULL; }
 void insertChild(struct pcb_t *parent, struct pcb_t *p) {}
 struct pcb_t* removeChild(struct pcb_t *p) { return NULL; }
