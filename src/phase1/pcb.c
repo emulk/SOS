@@ -155,7 +155,7 @@ struct pcb_t* removeProcQ(struct pcb_t** head) {
 }
 		
 	
-	return NULL; }
+
 struct pcb_t* outProcQ(struct pcb_t** head, struct pcb_t *p) { return NULL; }
 void insertChild(struct pcb_t *parent, struct pcb_t *p) {}
 struct pcb_t* removeChild(struct pcb_t *p) { return NULL; }
