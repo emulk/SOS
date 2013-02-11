@@ -15,25 +15,25 @@ typedef struct pcb_t
 	struct pcb_t* p_sib;
 
 	/* processor state, etc */
-	state_t	p_s;     
+	state_t p_s;     
 
 	/* process priority */
-	int	priority;
-	
+	int priority;
+
 	/* key of the semaphore on which the process is eventually blocked */
-	int	*p_semkey;
+	int *p_semkey;
 
 } pcb_t;
 
-// Semaphore Descriptor (SEMD) data structure
-typedef struct semd_t {
+
+/**
+ * Semaphore Descriptor (SEMD) data structure
+ **/
+typedef struct semd_t
+{
 	struct semd_t* s_next;
-	
-	// Semaphore value
-	int *s_key;
-	
-	// Queue of PCBs blocked on the semaphore
-	pcb_t *s_procQ;
+	int *s_key;             // semaphore value
+	struct pcb_t *s_procQ; 	// queue of PCBs blocked on the semaphore
 } semd_t;
 
 #endif

@@ -118,8 +118,26 @@ struct pcb_t *allocPcb(void)
 	}
 }
 
-
-void insertProcQ(struct pcb_t **head, struct pcb_t* p) {}
+/**
+ * Inserisce l’elemento puntato da "p" nella coda dei processi puntata da "head".
+ * L'inserimento deve avvenire tenendo conto della priorita' di ciascun "pcb"
+ * (campo p->priority). La coda dei processi deve essere ordinata in base alla
+ * priorita' dei "pcb", in ordine decrescente (i.e. l’elemento di testa e' l'elemento
+ * con la priorita’ piu’ alta).
+ */
+void insertProcQ(struct pcb_t **head, struct pcb_t *p)
+{
+	if ((*head) != NULL)
+	{
+		if ((*head)->priority > p->priority)	
+			insertProcQ(&(*head)->p_next, p);
+		else
+		{
+    		p->p_next = *head;
+    		*head = p;
+		}
+	}
+}
 
 /*[5]
  * Descrizione: Restituisce l'elemento di testa della coda dei processi puntata da head,
@@ -145,7 +163,7 @@ struct pcb_t* headProcQ(struct pcb_t* head) {
 struct pcb_t* removeProcQ(struct pcb_t** head) { 
 	pcb_t *tmp;
 	/*se la coda e vuota ritorna null*/
-	if(head->p_next == head){
+	if (head->p_next == head) {
 		return NULL;
 	} else {
 		/*il primo elemento della coda*/
@@ -155,9 +173,28 @@ struct pcb_t* removeProcQ(struct pcb_t** head) {
 		return tmp;
 	}
 }
+
+/**
+ * Rimuove il "pcb" puntato da "p" dalla coda dei processi puntata da "head".
+ * Se "p" non e' presente nella coda, restituisce NULL.
+ * NOTA: "p" puo' trovarsi in una posizione arbitraria della coda.
+ */
+struct pcb_t* outProcQ(struct pcb_t** head, struct pcb_t *p)
+{
+	if ((*head) != NULL)
+	{
+		if ((*head) == p)
+		{
+			struct pcb_t *temp = (*head)->p_next;
+			// *head = NULL ??? 
+			(*head) = temp;
+		}
+		else
+			outProcQ(&(*head)->p_next, p);
+	}
 	
-/*[7]*/
-struct pcb_t* outProcQ(struct pcb_t** head, struct pcb_t *p) { return NULL; }
+	return NULL;
+}
 
 /*[8]
  * Descrizione: Inserisce il pcb puntato da p come figlio del pcb puntato da parent*/
