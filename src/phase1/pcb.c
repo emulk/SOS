@@ -128,11 +128,11 @@ void insertProcQ(struct pcb_t **head, struct pcb_t* p) {}
 struct pcb_t* headProcQ(struct pcb_t* head) {
 	pcb_t *tmp;
 	/*Se la sentinella punta a se stessa , significa che la coda e vuota e quindi ritorno null*/
-	if(head->next == head){
+	if(&(head->p_next) == head || &(head->p_next) == NULL){
 		return NULL;
 	} else {
 		/* assegna l'elemento puntato da head a temp */
-		temp = head->next;
+		temp = &(head->p_next);
 		return temp;
 	}
 }
@@ -145,19 +145,55 @@ struct pcb_t* headProcQ(struct pcb_t* head) {
 struct pcb_t* removeProcQ(struct pcb_t** head) { 
 	pcb_t *tmp;
 	/*se la coda e vuota ritorna null*/
-	if(head->next == head){
+	if(head->p_next == head){
 		return NULL;
 	} else {
-		temp = head->next;
-		head=tmp->next;
+		/*il primo elemento della coda*/
+		temp = head->p_next;
+		/*elimino il primo elemento della coda*/
+		head=tmp->p_next;
 		return tmp;
 	}
 }
-		
 	
-	return NULL; }
+	
 struct pcb_t* outProcQ(struct pcb_t** head, struct pcb_t *p) { return NULL; }
-void insertChild(struct pcb_t *parent, struct pcb_t *p) {}
-struct pcb_t* removeChild(struct pcb_t *p) { return NULL; }
-struct pcb_t* outChild(struct pcb_t* p) { return NULL; }
+
+/*[8]
+ * Descrizione: Inserisce il pcb puntato da p come figlio del pcb puntato da parent*/
+void insertChild(struct pcb_t *parent, struct pcb_t *p) {
+	/*se parent ha gia dei figli, accoda p ai figli di parent*/
+	pcb_t *tmp;
+	tmp=&(parent->p_first_child);
+	&(parent->p_first_child) = p;
+	&(p->p_next)=tmp;
+	
+	/*dopo aver aggiunto p come figlio di parent, imposta parent come padre di p*/
+	&(p->p_parent)=parent;
+}
+
+struct pcb_t* removeChild(struct pcb_t *p) {
+	
+	/*se non ci sono figli restituisco null*/
+	if(&(p->p_first_child) == NULL || &(p->p_first_child) == p){
+		return NULL;
+	} else {
+		figlio=container_of(p->p_child.next, pcb_t, p_sib);  /* figlio conterra' il primo figlio di p_child */
+
+		list_del(&(figlio->p_sib)); /* rimuove il figlio dalla lista dei figli */
+		figlio->p_parent=NULL; /* p non ha piu il puntatore al padre */
+		return figlio;
+	}
+}
+
+struct pcb_t* outChild(struct pcb_t* p) { 
+	/*controllo se p ha un padre.Se non ha un padre restituisco NULL*/
+	if ((&(p->p_parent))== NULL) { 
+		return NULL;
+		}else {
+            list_del (&(p->p_sib)); /*elimino elemento p dall'albero*/
+            p->p_parent = NULL;
+            return p;
+       }
+}
 
