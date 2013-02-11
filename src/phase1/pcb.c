@@ -32,34 +32,34 @@ HIDDEN struct list_head pcbfree_h;
 static int initialized = FALSE;
 
 
-HIDDEN void initPcb_t (pcb_t *p)
+/**
+ * Inizializzazione di una struttura "pcb_t"
+ */
+HIDDEN void initPcb_t(struct pcb_t *p)
 {
-	/* process queue fields */
- 	p->p_next.next = NULL ;
- 	p->p_next.prev = NULL ;
-	
-	/* process tree fields */
+	int count;
+
+ 	p->p_next = NULL ;
+ 	p->p_sib = NULL;
 	p->p_parent = NULL;
-	INIT_LIST_HEAD (&(p->p_child));
-	p->p_sib.next = NULL;
-	p->p_sib.prev = NULL;
+	p->p_first_child = NULL;
 
-	/* processor state, etc 
-    * la struttura dati state_t e' una struttura contenente dati di tipo U32 che sono
-    * un unsigned int della macchina su cui si trova
-    */
+	/* inizializzazione stati del processo */
 	p->p_s.entry_hi = 0;
-	p->p_s.cause = 0;
-	p->p_s.status = 0;
-	p->p_s.pc_epc = 0;  /* pc in the new area, epc in the old area */
-	p->p_s.gpr[29] = 0;
-	p->p_s.hi = 0;
-	p->p_s.lo = 0;				
+	p->p_s.cause    = 0;
+	p->p_s.status   = 0;
+	p->p_s.pc_epc   = 0;
+	p->p_s.hi       = 0;
+	p->p_s.lo       = 0;	
+	
+	/* inizializzazione registri ad uso generale */
+	for (count=0; count<30; count++)
+		p->p_s.gpr[count] = 0;			
 
-	/* process priority */
+	/* priorita' del processo */
 	p->priority = 0;
 	
-	/* key of the semaphore on which the process is eventually blocked */
+	/* chiave del semaforo sul quale il processo puo' bloccarsi */
 	p->p_semkey = 0;
 }
  	
