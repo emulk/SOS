@@ -26,38 +26,6 @@ static pcb_t pcb_table[MAXPROC];
 /* struttura list_head per la sentinella 
  * E la testa della lista pcbFree */ 
 static struct pcb_t **pcbfree_h;
-
-
-/**
- * Inizializzazione di una struttura "pcb_t"
- */
-HIDDEN void initPcb_t(struct pcb_t *p)
-{
-	int count;
-
- 	p->p_next = NULL ;
- 	p->p_sib = NULL;
-	p->p_parent = NULL;
-	p->p_first_child = NULL;
-
-	/* inizializzazione stati del processo */
-	p->p_s.entry_hi = 0;
-	p->p_s.cause    = 0;
-	p->p_s.status   = 0;
-	p->p_s.pc_epc   = 0;
-	p->p_s.hi       = 0;
-	p->p_s.lo       = 0;	
-	
-	/* inizializzazione registri ad uso generale */
-	for (count=0; count<30; count++)
-		p->p_s.gpr[count] = 0;			
-
-	/* priorita' del processo */
-	p->priority = 0;
-	
-	/* chiave del semaforo sul quale il processo puo' bloccarsi */
-	p->p_semkey = 0;
-}
  	
 
 /**
