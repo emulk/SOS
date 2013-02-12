@@ -18,10 +18,8 @@ struct pcb_t* headProcQ(struct pcb_t* head);
 struct pcb_t* removeProcQ(struct pcb_t** head);
 struct pcb_t* outProcQ(struct pcb_t** head, struct pcb_t *p);
 
-/*
-this can be inlined or implemented as preprocessor macro
 void forallProcQ(struct pcb_t *head, void *fun(struct pcb_t *pcb, void *), void *arg);
-*/
+
 
 /* Tree view functions */
 void insertChild(struct pcb_t *parent, pcb_t *p);

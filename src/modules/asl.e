@@ -14,8 +14,6 @@ pcb_t* outBlocked(pcb_t *p);
 pcb_t* headBlocked(int key);
 void outChildBlocked(pcb_t *p);
 
-/*
-this function can be inlined on implemented as a preprocessor macro.
 void forallBlocked(int *key, void *fun(struct pcb_t *pcb, void *), void *arg);
-*/
+
 #endif

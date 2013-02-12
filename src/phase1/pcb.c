@@ -135,7 +135,6 @@ struct pcb_t *allocPcb(void)
  */
 void insertProcQ(struct pcb_t **head, struct pcb_t *p)
 {
-
 	if ((*head) != NULL)
 	{
 		if ((*head)->priority > p->priority)	
@@ -256,5 +255,9 @@ struct pcb_t* outChild(struct pcb_t* p) {
             p->p_parent = NULL;
             return p;
        }
+}
+
+void forallProcQ(struct pcb_t *head, void *fun(struct pcb_t *pcb, void *), void *arg)
+{
 }
 
