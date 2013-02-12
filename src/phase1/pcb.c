@@ -93,6 +93,7 @@ void initPcbs(void)
  * @return: l'elemento inserito
  */
 void freePcb(struct pcb_t *p) { 
+	
 	return list_add(&(p->p_next), &pcbfree_h);
 }
 
@@ -146,12 +147,12 @@ void insertProcQ(struct pcb_t **head, struct pcb_t *p)
 struct pcb_t* headProcQ(struct pcb_t* head) {
 	pcb_t *tmp;
 	/*Se la sentinella punta a se stessa , significa che la coda e vuota e quindi ritorno null*/
-	if(&(head->p_next) == head || &(head->p_next) == NULL){
+	if((head->p_next) == head || (head->p_next) == NULL){
 		return NULL;
 	} else {
 		/* assegna l'elemento puntato da head a temp */
-		temp = &(head->p_next);
-		return temp;
+		tmp = &(head->p_next);
+		return tmp;
 	}
 }
 	
@@ -163,13 +164,13 @@ struct pcb_t* headProcQ(struct pcb_t* head) {
 struct pcb_t* removeProcQ(struct pcb_t** head) { 
 	pcb_t *tmp;
 	/*se la coda e vuota ritorna null*/
-	if (head->p_next == head) {
+	if (((*head)->p_next) == head || ((*head)->p_next) == NULL) {
 		return NULL;
 	} else {
 		/*il primo elemento della coda*/
-		temp = head->p_next;
+		tmp = (*head)->p_next;
 		/*elimino il primo elemento della coda*/
-		head=tmp->p_next;
+		(*head)=tmp->p_next;
 		return tmp;
 	}
 }
@@ -202,11 +203,11 @@ void insertChild(struct pcb_t *parent, struct pcb_t *p) {
 	/*se parent ha gia dei figli, accoda p ai figli di parent*/
 	pcb_t *tmp;
 	tmp=&(parent->p_first_child);
-	&(parent->p_first_child) = p;
-	&(p->p_next)=tmp;
+	(parent->p_first_child) = p;
+	(p->p_next)=tmp;
 	
 	/*dopo aver aggiunto p come figlio di parent, imposta parent come padre di p*/
-	&(p->p_parent)=parent;
+	(p->p_parent)=parent;
 }
 
 /*[9]
@@ -218,7 +219,7 @@ struct pcb_t* removeChild(struct pcb_t *p) {
 	if(&(p->p_first_child) == NULL || &(p->p_first_child) == p){
 		return NULL;
 	} else {
-		figlio=container_of(p->p_child.next, pcb_t, p_sib);  /* figlio conterra' il primo figlio di p_child */
+		figlio=container_of((p->p_first_child->p_next), pcb_t, p_sib);  /* figlio conterra' il primo figlio di p_child */
 
 		list_del(&(figlio->p_sib)); /* rimuove il figlio dalla lista dei figli */
 		figlio->p_parent=NULL; /* p non ha piu il puntatore al padre */
