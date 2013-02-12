@@ -32,6 +32,7 @@ HIDDEN struct list_head pcbfree_h;
 static int initialized = FALSE;
 
 
+
 /**
  * Inizializzazione di una struttura "pcb_t"
  */
@@ -93,8 +94,13 @@ void initPcbs(void)
  * @return: l'elemento inserito
  */
 void freePcb(struct pcb_t *p) { 
+	pcb_t *tmp;
+	tmp=pcbfree_h.next;
+	pcbfree_h.next=p;
+	p->p_sib=tmp;
+	return p;
+	//return list_add(&(p->p_next), &pcbfree_h);
 	
-	return list_add(&(p->p_next), &pcbfree_h);
 }
 
 /**
@@ -109,12 +115,13 @@ struct pcb_t *allocPcb(void)
 	pcb_t *temp;
 	
 	/*Se la pcbFree e vuota restituisco NULL*/
-	if(&(pcbfree_h.next) == &pcbfree_h){
+	if(&(pcbfree_h.next) == &(pcbfree_h)){
 		return NULL;
 	} else {
 		temp = container_of (pcbfree_h.next, pcb_t, p_next); /* estrae il primo elemento della lista e lo salva in p */
 		list_del (pcbfree_h.next); /* elimina l'elemento estratto dalla lista'*/
-		initPcb_t(temp); /* inizializza il pcb */
+		//initPcb_t(temp); /* inizializza il pcb */
+		temp=NULL;
 		return temp; /* ritorna il pcb rimosso */
 	}
 }
