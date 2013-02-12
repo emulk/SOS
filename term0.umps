@@ -1,0 +1,4 @@
+Strange Operating System test
+Control Blocks initialized  
+No more than 20 proc
+allocPcb(): unexpected NULL   kernel panic()

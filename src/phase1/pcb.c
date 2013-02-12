@@ -34,6 +34,15 @@ static struct pcb_t **pcbfree_h;
  */
 void initPcbs(void)
 {
+	static int cont = 0;
+	
+	struct pcb_t *new = &(pcb_table[cont++]);
+	freePcb(new);
+	
+	if (cont == MAXPROC)
+		return;
+	else
+		initPcbs();
 }
 
 
@@ -42,8 +51,9 @@ void initPcbs(void)
  * @return: l'elemento inserito
  */
 void freePcb(struct pcb_t *p)
-{ 
-	return NULL;
+{
+	p->p_next = (*pcbfree_h)->p_next;
+	(*pcbfree_h)->p_next = p;
 }
 
 /**
