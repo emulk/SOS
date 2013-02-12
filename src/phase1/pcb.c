@@ -109,7 +109,7 @@ struct pcb_t *allocPcb(void)
 	pcb_t *temp;
 	
 	/*Se la pcbFree e vuota restituisco NULL*/
-	if(list_empty(&pcbfree_h)){
+	if(&(pcbfree_h.next) == &pcbfree_h){
 		return NULL;
 	} else {
 		temp = container_of (pcbfree_h.next, pcb_t, p_next); /* estrae il primo elemento della lista e lo salva in p */
@@ -128,6 +128,7 @@ struct pcb_t *allocPcb(void)
  */
 void insertProcQ(struct pcb_t **head, struct pcb_t *p)
 {
+
 	if ((*head) != NULL)
 	{
 		if ((*head)->priority > p->priority)	
@@ -215,13 +216,18 @@ void insertChild(struct pcb_t *parent, struct pcb_t *p) {
  * return: NULL || primo figlio*/
 struct pcb_t* removeChild(struct pcb_t *p) {
 	pcb_t *figlio;
+	pcb_t *fratello;
 	/*se non ci sono figli restituisco null*/
-	if(&(p->p_first_child) == NULL || &(p->p_first_child) == p){
+	if(&(p->p_first_child) == NULL ){
 		return NULL;
 	} else {
-		figlio=container_of((p->p_first_child->p_next), pcb_t, p_sib);  /* figlio conterra' il primo figlio di p_child */
-
-		list_del(&(figlio->p_sib)); /* rimuove il figlio dalla lista dei figli */
+		/*asegno il filgio di p a figlio*/
+		figlio = p->p_first_child;
+		/*asegno il fratello del figlio di p, a fratello*/
+		fratello=figlio->p_sib;
+		/*asegno come figlio di p, il fratello del figlio di p*/
+		p->p_first_child=fratello;
+		
 		figlio->p_parent=NULL; /* p non ha piu il puntatore al padre */
 		return figlio;
 	}
@@ -239,6 +245,7 @@ struct pcb_t* outChild(struct pcb_t* p) {
 		return NULL;
 		}else {
             list_del (&(p->p_sib)); /*elimino elemento p dall'albero*/
+            
             p->p_parent = NULL;
             return p;
        }
