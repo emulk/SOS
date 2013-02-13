@@ -1,4 +1,4 @@
 Strange Operating System test
-Control Blocks initialized  
+hellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohelloControl Blocks initialized  
 No more than 20 proc
-allocPcb(): unexpected NULL   kernel panic()
+kernel panic()

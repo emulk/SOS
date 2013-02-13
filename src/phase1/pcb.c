@@ -20,17 +20,16 @@
  
 #include <pcb.e>
 
-/* array di pcb con dimensione MAXPROC (MAXPROC = 20) */
-static pcb_t pcb_table[MAXPROC];
+// funzione di stampa per il debug
+extern void addokbuf(char *str);
 
-/* struttura list_head per la sentinella 
- * E la testa della lista pcbFree */ 
+static pcb_t pcb_table[MAXPROC];
 static struct pcb_t **pcbfree_h;
  	
 
 /**
- * Inizializza la lista dei processi liberi in modo da contenere
- * tutti gli elementi della pcb_table.
+ * Inizializzazione lista processi liberi e della memoria contenente
+ * i processi
  */
 void initPcbs(void)
 {
@@ -47,24 +46,64 @@ void initPcbs(void)
 
 
 /**
- * Inserisce il PCB puntato da p  nella lista dei pcb liberi (pcbFree)
- * @return: l'elemento inserito
+ * I processi non piu' utilizzati vengono inseriti all'interno della
+ * lista dei processi liberi.
  */
 void freePcb(struct pcb_t *p)
 {
 	p->p_next = (*pcbfree_h)->p_next;
 	(*pcbfree_h)->p_next = p;
+	addokbuf("hello");
 }
 
 /**
- * Restituisce NULL se la pcbFree e' vuota. Altrimenti rimuove un elemento
- * dalla pcbFree, inizializza tutti i campi (NULL/0) e restituisce l'elemento
- * rimosso.
- * @return: NULL || l'elemento rimosso
+ * Rimozione di un processo dalla lista dei processi liberi, e successivamente
+ * vengono inizializzati tutti i suoi campi cosiche' possa essere riutilizzato.
+ * @return NULL se la lista dei processi liberi e' vuota, altrimenti viene
+ * restituito un puntatore al processo rimosso.
+ * XXX non credo che questa funzione debba essere ricorsiva. Non ha senso!!!
  **/
 struct pcb_t *allocPcb(void)
 {
-	return NULL;
+	int count = 0;
+	struct pcb_t *new = NULL;
+	
+	if ((*pcbfree_h) != NULL)
+	{
+		// punto al primo processo in testa alla lista
+		new = (*pcbfree_h)->p_next;
+		
+		// rimozione del processo dalla lista
+		struct pcb_t *tmp = new->p_next;
+		(*pcbfree_h)->p_next = tmp->p_next;
+		
+		// inizializzazione campi processo
+		new->p_next = NULL;
+		new->p_parent = NULL;
+		new->p_first_child = NULL;
+		new->p_sib = NULL;
+		
+		// inizializzazione dei campi del processo
+		new->p_s.entry_hi = 0;
+		new->p_s.cause    = 0;
+		new->p_s.status   = 0;
+		new->p_s.pc_epc   = 0;
+		new->p_s.hi       = 0;
+		new->p_s.lo       = 0;
+		
+		// inizializzazione registri ad uso generale
+		for (count=0; count<29; count++)
+			new->p_s.gpr[count] = 0;
+
+		// inizializzazione priorita' processo
+		new->priority = 0;
+
+		/* inizializzazione chiave del semaforo in cui il
+		 * processo e' bloccato */
+		new->p_semkey = 0;		
+	}
+	
+	return new;
 }
 
 /**
