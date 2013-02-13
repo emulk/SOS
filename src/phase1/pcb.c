@@ -53,7 +53,6 @@ void freePcb(struct pcb_t *p)
 {
 	p->p_next = (*pcbfree_h)->p_next;
 	(*pcbfree_h)->p_next = p;
-	addokbuf("hello");
 }
 
 /**
@@ -74,14 +73,15 @@ struct pcb_t *allocPcb(void)
 		new = (*pcbfree_h)->p_next;
 		
 		// rimozione del processo dalla lista
-		struct pcb_t *tmp = new->p_next;
-		(*pcbfree_h)->p_next = tmp->p_next;
+		(*pcbfree_h)->p_next = new->p_next;
 		
 		// inizializzazione campi processo
 		new->p_next = NULL;
 		new->p_parent = NULL;
 		new->p_first_child = NULL;
 		new->p_sib = NULL;
+		
+		addokbuf("...HERE...");
 		
 		// inizializzazione dei campi del processo
 		new->p_s.entry_hi = 0;
@@ -90,7 +90,7 @@ struct pcb_t *allocPcb(void)
 		new->p_s.pc_epc   = 0;
 		new->p_s.hi       = 0;
 		new->p_s.lo       = 0;
-		
+
 		// inizializzazione registri ad uso generale
 		for (count=0; count<29; count++)
 			new->p_s.gpr[count] = 0;
@@ -100,8 +100,11 @@ struct pcb_t *allocPcb(void)
 
 		/* inizializzazione chiave del semaforo in cui il
 		 * processo e' bloccato */
-		new->p_semkey = 0;		
+		// new->p_semkey = NULL;
 	}
+	
+	if (new == NULL)
+		addokbuf("NULL");
 	
 	return new;
 }
