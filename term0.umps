@@ -1,4 +1,4 @@
 Strange Operating System test
-hellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohellohelloControl Blocks initialized  
+Control Blocks initialized  
 No more than 20 proc
-kernel panic()
+ ERROR: allocPcb(): allocated more than MAXPROC entries   kernel panic()
