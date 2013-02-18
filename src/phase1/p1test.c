@@ -167,7 +167,6 @@ void increment_counter(struct pcb_t *pcb, void* pt)
 
 int main() {
 
-	int my_numbers[MAXPROC];
 	int i;
 
 	head = NULL;
@@ -448,7 +447,7 @@ int main() {
 
 	addokbuf("Test removeBlocked(): test started   \n");
 	for (i = 10; i< MAXPROC; i++) {
-		q = removeBlocked(&my_numbers[i]);
+		q = removeBlocked(&sem[i]);
 		if (q == NULL) 
 			adderrbuf("ERROR: removeBlocked(): wouldn't remove   ");
 		if (q != procp[i]) /* different from what expected!*/
@@ -457,7 +456,7 @@ int main() {
 
 	addokbuf("test blocked done\n");
 
-	if (removeBlocked(&my_numbers[11]) != NULL)
+	if (removeBlocked(&sem[11]) != NULL)
 		adderrbuf("ERROR: removeBlocked(): removed nonexistent blocked proc   ");
 
 	addokbuf("Test insertBlocked() and removeBlocked() ok   \n");
