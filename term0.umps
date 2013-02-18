@@ -1,4 +1,10 @@
 Strange Operating System test
 Control Blocks initialized  
 No more than 20 proc
- ERROR: allocPcb(): allocated more than MAXPROC entries   kernel panic()
+ allocPcb test OK   
+ list initialized correctly  
+ 10 entries were added to the free PCB list   
+We are going to test the insertProcQ function...   
+Test insertProcQ: OK. Inserted 10 elements 
+ Checking if the first element has max priority
+ERROR: headProcQ(qa) failed   kernel panic()
