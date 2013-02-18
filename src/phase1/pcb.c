@@ -30,7 +30,6 @@ void debug(int a0, int a1) {
 	return;
 }
 
-
 static int initialized = FALSE;
  
 void initPcb(struct pcb_t *p)
@@ -112,7 +111,6 @@ void freePcb(struct pcb_t *p)
  * vengono inizializzati tutti i suoi campi cosiche' possa essere riutilizzato.
  * @return NULL se la lista dei processi liberi e' vuota, altrimenti viene
  * restituito un puntatore al processo rimosso.
- * XXX non credo che questa funzione debba essere ricorsiva. Non ha senso!!!
  **/
 struct pcb_t *allocPcb(void)
 {
@@ -171,7 +169,7 @@ struct pcb_t* headProcQ(struct pcb_t* head)
  * rimosso dalla lista
  * return: NULL || puntatore all'elemento rimosso*/
 struct pcb_t* removeProcQ(struct pcb_t** head)
-{
+{	
 	return NULL;
 }
 
@@ -182,7 +180,18 @@ struct pcb_t* removeProcQ(struct pcb_t** head)
  */
 struct pcb_t* outProcQ(struct pcb_t** head, struct pcb_t *p)
 {
-	return NULL;
+	struct pcb_t *tmp = NULL;
+	while ((*head) != NULL)
+	{
+		if ((*head)->p_next == p) {
+			tmp = &(*head)->p_next->p_next;
+			(*head)->p_next = tmp;
+		}
+		
+		head = &(*head)->p_next;
+	}
+	
+	return tmp;
 }
 
 /* [8]
