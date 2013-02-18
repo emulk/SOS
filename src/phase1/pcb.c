@@ -26,6 +26,11 @@ extern void addokbuf(char *str);
 static pcb_t pcb_table[MAXPROC+1];
 static struct pcb_t *pcbfree_h;
 
+void debug(int a0, int a1) {
+	return;
+}
+
+
 static int initialized = FALSE;
  
 void initPcb(struct pcb_t *p)
@@ -135,16 +140,15 @@ struct pcb_t *allocPcb(void)
  */
 void insertProcQ(struct pcb_t **head, struct pcb_t *p)
 {
-	if ((*head) != NULL)
+	while ((*head) != NULL)
 	{
-		if ((*head)->priority > p->priority)	
-			insertProcQ(&(*head)->p_next, p);
-		else
-		{
-    		p->p_next = (*head)->p_next;
-    		(*head)->p_next = p;
-		}
+		if ((*head)->priority < p->priority)
+			break;
+		head = &(*head)->p_next;
 	}
+	
+	p->p_next = *head;
+	*head = p;
 }
 
 /**
@@ -156,8 +160,8 @@ struct pcb_t* headProcQ(struct pcb_t* head)
 {
 	struct pcb_t *tmp = NULL;
 	if (head != NULL)
-		tmp = head->p_next;
-	
+		tmp = &(head->p_next);
+		
 	return tmp;
 }
 
