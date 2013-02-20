@@ -245,6 +245,7 @@ int main() {
 	/* Removing the first element from ProcQ */
 	addokbuf("Removing the first element. Testing removeProcQ\n");
 	q = removeProcQ(&head);
+	
 	if (q == NULL || q != maxproc)
 		adderrbuf("ERROR: removeProcQ(&qa, midproc) failed to remove the elements in the right order   ");
 	freePcb(q);
@@ -253,7 +254,7 @@ int main() {
 	/* we inserted 10 elements and removed 2. Now let us remove the
 	remaining elements and check if the last one has the min prio */
 	addokbuf(" Testing removeProcQ ...   \n");
-	for (i = 0; i < 7; i++) {
+	for (i=0; i<7; i++) {
 		if ((q = removeProcQ(&head)) == NULL)
 			adderrbuf("removeProcQ(&qa): unexpected NULL   ");
 		freePcb(q);
@@ -267,6 +268,11 @@ int main() {
 	forallProcQ(head, increment_counter , &my_counter_process);
 	if(my_counter_process != 1)
 		adderrbuf("ERROR: forallProcQ(): failed on last entry   ");
+
+	//debug(q->priority, 444444);
+
+	addokbuf("xxxxxxxxxxxxxxxxxxxx");	
+	
 	my_counter_process = 0;
 
 	removeProcQ(&head);

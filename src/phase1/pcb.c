@@ -1,4 +1,4 @@
-/*
+/**
  *  Copyright (C) 2011 Orgest Shehaj & Fabian Priftaj & Eduart Uzeir
  *  Author: Orgest Shehaj <shehaj@cs.unibo.it>
  *          Fabian Priftaj <priftaj@cs.unibo.it>
@@ -20,18 +20,13 @@
  
 #include <pcb.e>
 
-// funzione di stampa per il debug
-extern void addokbuf(char *str);
-
 static pcb_t pcb_table[MAXPROC+1];
 static struct pcb_t *pcbfree_h;
-
-void debug(int a0, int a1) {
-	return;
-}
-
 static int initialized = FALSE;
- 
+
+/**
+ * Inizializzazione della struttura dati di un processo
+ */ 
 void initPcb(struct pcb_t *p)
 {
 	int count = 0;
@@ -65,6 +60,20 @@ void initPcb(struct pcb_t *p)
 	// inizializzazione chiave del semaforo 
 	// new->p_semkey = NULL;
 } 
+
+/**
+ *
+ */
+void insertSibling(struct pcb_t *firstchild, struct pcb_t *p)
+{
+	if (firstchild->p_sib == NULL)
+	{
+		firstchild->p_sib = p;
+		p->p_parent = firstchild->p_parent;
+	}
+	else
+		insertSibling(firstchild->p_sib, p);
+}
 
 
 /**
@@ -156,21 +165,28 @@ void insertProcQ(struct pcb_t **head, struct pcb_t *p)
  */
 struct pcb_t* headProcQ(struct pcb_t* head)
 {
-	struct pcb_t *tmp = NULL;
 	if (head != NULL)
-		tmp = &(head->p_next);
+		return head;
 		
-	return tmp;
+	return NULL;
 }
 
-/*[6]
- * Descrizione: rimuove il primo elemento dalla coda dei processi puntata da head.
- * Ritorna null se la coda e vuota, altrimenti ritorna il puntatore all'elemento
- * rimosso dalla lista
- * return: NULL || puntatore all'elemento rimosso*/
+/**
+ * Rimuove il primo elemento dalla coda dei processi puntata da "head".
+ * @return NULL se la coda e' vuota, altrimenti ritorna il puntatore
+ * all'elemento rimosso dalla lista
+ */
 struct pcb_t* removeProcQ(struct pcb_t** head)
-{	
-	return NULL;
+{
+	struct pcb_t *tmp = NULL;
+
+	if (*head == NULL)
+   	return NULL;
+
+	tmp = *head;
+	*head = (*head)->p_next;
+	
+	return tmp;
 }
 
 /**
@@ -181,46 +197,93 @@ struct pcb_t* removeProcQ(struct pcb_t** head)
 struct pcb_t* outProcQ(struct pcb_t** head, struct pcb_t *p)
 {
 	struct pcb_t *tmp = NULL;
-	while ((*head) != NULL)
+
+	if (head == NULL)
+   	 return NULL;
+	else if (*head == p)
+		return removeProcQ(head);
+	else
+		return outProcQ(&((*head)->p_next), p);
+}
+
+/**
+ * Inserisce il pcb puntato da p come figlio del pcb puntato da parent
+ */
+void insertChild(struct pcb_t *parent, struct pcb_t *p)
+{
+	if (parent->p_first_child == NULL)
 	{
-		if ((*head)->p_next == p) {
-			tmp = &(*head)->p_next->p_next;
-			(*head)->p_next = tmp;
-		}
-		
-		head = &(*head)->p_next;
+		parent->p_first_child = p;
+		p->p_parent = parent;
 	}
+	else
+		insertSibling(parent->p_first_child,p);
+}
+
+/**
+ * Rimuove il primo figlio del pcb puntato da p
+ * @return: NULL se il processo non ha figli, oppure primo figlio
+ */
+struct pcb_t* removeChild(struct pcb_t *p)
+{
+	struct pcb_t *tmp = NULL;
+	
+	if (p->p_first_child == NULL)
+		return NULL;
+   
+	tmp = p->p_first_child;
+	p->p_first_child = tmp->p_sib;
+	tmp->p_sib = NULL;
+	tmp->p_parent = NULL;
 	
 	return tmp;
 }
 
-/* [8]
- * Descrizione: Inserisce il pcb puntato da p come figlio del pcb puntato da parent*/
-void insertChild(struct pcb_t *parent, struct pcb_t *p)
+
+struct pcb_t *outChild_rec(struct pcb_t *list_child, struct pcb_t *p)
 {
-	return NULL;
+	if (list_child->p_sib == p)
+	{
+		struct pcb_t *removed = list_child->p_sib;
+		list_child->p_sib = removed->p_sib;
+		removed->p_sib = NULL;
+		removed->p_parent = NULL;
+		return removed;
+	} else
+		return outChild_rec(list_child->p_sib,p);
 }
 
-/* [9]
- * Descrizione: Rimuove il primo figlio del pcb puntato da p, se p non ha figli restituisce nulll
- * return: NULL || primo figlio*/
-struct pcb_t* removeChild(struct pcb_t *p)
-{
-	return NULL;
-}
-
-/* [10]
- * Descrizione:
- * Rimuove il PCB puntato da p dalla lista dei figli del padre. Se il PCB puntato da p non ha un padre,
- * restituisce NULL. Altrimenti restituisce l'elemento rimosso (cioe' p). A differenza della removeChild, 
- * p puo' trovarsi in una posizione arbitraria (ossia non e' necessariamente il primo figlio del padre)
- * return: NULL || figlio*/
+/**
+ * Rimuove il PCB puntato da p dalla lista dei figli del padre. Se il PCB puntato da "p"
+ * non ha un padre, restituisce NULL, altrimenti restituisce l'elemento rimosso (cioe' p).
+ * A differenza della removeChild, "p" puo' trovarsi in una posizione arbitraria
+ * (ossia non e' necessariamente il primo figlio del padre)
+ */
 struct pcb_t* outChild(struct pcb_t* p)
 {
-	return NULL; 
+	struct pcb_t *list_child = (p->p_parent)->p_first_child;
+	
+	if (p->p_parent == NULL)
+		return NULL;
+	else if (list_child == p)
+   	 return removeChild(p->p_parent);
+	else {
+		pcb_t *removed = outChild_rec(list_child,p);
+		return removed;
+	}
+
+	return NULL;
 }
 
+/**
+ * Richiama la funzione fun() per ogni elemento contenuto all'interno 
+ * della lista "head"
+ */
 void forallProcQ(struct pcb_t *head, void *fun(struct pcb_t *pcb, void *), void *arg)
 {
+	if (head != NULL)
+	{
+		fun(head, arg);
+		forallProcQ(head->p_next,fun,arg);
+	}
 }
-

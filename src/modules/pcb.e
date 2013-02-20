@@ -5,7 +5,6 @@
 #include <listx.h>
 
 /* PCB handling functions */
-void debug(int a0, int a1);
 
 /* PCB free list handling functions */
 void initPcbs(void);
