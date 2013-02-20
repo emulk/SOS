@@ -268,10 +268,6 @@ int main() {
 	forallProcQ(head, increment_counter , &my_counter_process);
 	if(my_counter_process != 1)
 		adderrbuf("ERROR: forallProcQ(): failed on last entry   ");
-
-	//debug(q->priority, 444444);
-
-	addokbuf("xxxxxxxxxxxxxxxxxxxx");	
 	
 	my_counter_process = 0;
 

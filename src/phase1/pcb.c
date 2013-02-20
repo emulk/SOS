@@ -58,7 +58,7 @@ void initPcb(struct pcb_t *p)
 	p->priority = 0;
 
 	// inizializzazione chiave del semaforo 
-	// new->p_semkey = NULL;
+	p->p_semkey = 0;
 } 
 
 /**
@@ -196,8 +196,6 @@ struct pcb_t* removeProcQ(struct pcb_t** head)
  */
 struct pcb_t* outProcQ(struct pcb_t** head, struct pcb_t *p)
 {
-	struct pcb_t *tmp = NULL;
-
 	if (head == NULL)
    	 return NULL;
 	else if (*head == p)
@@ -284,6 +282,6 @@ void forallProcQ(struct pcb_t *head, void *fun(struct pcb_t *pcb, void *), void 
 	if (head != NULL)
 	{
 		fun(head, arg);
-		forallProcQ(head->p_next,fun,arg);
+		forallProcQ(head->p_next, fun, arg);
 	}
 }
