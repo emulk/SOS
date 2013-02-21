@@ -7,4 +7,47 @@ No more than 20 proc
 We are going to test the insertProcQ function...   
 Test insertProcQ: OK. Inserted 10 elements 
  Checking if the first element has max priority
-ERROR: headProcQ(qa) failed   kernel panic()
+Done
+Removing an element. Testing outProcQ
+Done
+Removing the first element. Testing removeProcQ
+Done
+ Testing removeProcQ ...   
+Applying a function to all the elements of the list. Testing forallProcQ
+Done
+Let's see if now the queue is empty
+ Test insertProcQ(), removeProcQ(), headProcQ(), forallProcQ(), outProcQ(): OK   
+ Test process queues module: OK      
+ Testing process trees...
+Inserting...   
+Inserted 2 children of pcb0  
+Inserted 2 children of pcb7  
+    removed the first child of 7
+   re-inserted son in 7, now removing in 0
+    removed the first child of 0
+ Check outchild function
+  outchild exectuted on 1
+  outchild exectuted on 8
+  removechild exectuted on 0
+  removechild exectuted on 7
+  removechild exectuted on 0
+  removechild exectuted on 0
+  removechild exectuted on 0
+Test: insertChild(), removeChild() OK   
+Testing process tree module OK      
+Now starting with test of semaphores
+Initializing active semaphore list   
+ Test insertBlocked(): test #1 started  
+Test insertBlocked(): test #2 started  
+Counting the number of elements inside semaphores
+   i have found 3 elements in sem 1; correct
+'   i have found 1 elements in sem 2; correct
+Check if the semaphores are returned to the free list
+Test removeBlocked(): test started   
+test blocked done
+Test insertBlocked() and removeBlocked() ok   
+I called the function outChildBlocked on procp[2]
+ASL module OK   
+Farewell to ye all! In the land of the stranger I rise or I fall - David Crockett
+All the tests for SOS were correctly performed
+

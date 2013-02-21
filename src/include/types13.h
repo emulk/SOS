@@ -26,12 +26,14 @@ typedef struct pcb_t
 } pcb_t;
 
 
-// Semaphore Descriptor (SEMD) data structure
+/**
+ * Semaphore Descriptor (SEMD) data structure
+ **/
 typedef struct semd_t
 {
 	struct semd_t* s_next;
-	struct pcb_t *s_procQ; 	// queue of PCBs blocked on the semaphore
 	int *s_key;             // semaphore value
+	struct pcb_t *s_procQ; 	// queue of PCBs blocked on the semaphore
 } semd_t;
 
 #endif

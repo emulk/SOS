@@ -9,14 +9,14 @@ PH1	= $(SRC)/phase1
 DEP	= $(MOD) $(INC) $(PH1)
 
 ## percorso locale
-LIBDIR	= /usr/local/lib/umps2
-INCDIR	= /usr/local/include/umps2/umps
-ELF32DIR	= /usr/local/share/umps2
+#LIBDIR	= /usr/local/lib/umps2
+#INCDIR	= /usr/local/include/umps2/umps
+#ELF32DIR	= /usr/local/share/umps2
 
 ## percorso laboratorio
-#LIBDIR	= /usr/lib/umps2
-#INCDIR	= /usr/include/umps2/umps
-#ELF32DIR	= /usr/share/umps2
+LIBDIR	= /usr/lib/umps2
+INCDIR	= /usr/include/umps2/umps
+ELF32DIR	= /usr/share/umps2
 
 # opzioni di compilazione/linking
 CC	= mipsel-linux-gcc
