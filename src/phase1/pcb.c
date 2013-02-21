@@ -20,29 +20,13 @@
 
 #include <pcb.e>
 
-/*Array dei pcb, con dimensione massima maxproc*/
-static pcb_t pcb_table[MAXPROC+1];
+static pcb_t pcb_table[MAXPROC];    // memoria contenente i processi
+static struct pcb_t pcbfree_h;      // testa della lista
+static int initialized = FALSE;     // variabile di controllo
 
-/*Testa della lista pcbFree*/
-static struct pcb_t *pcbfree_h = NULL;
-
-// variabile di controllo
-static int initialized = FALSE;
-
-/**
- * Inserimento 
- */
-void insertSibling(struct pcb_t *firstchild, struct pcb_t *p)
-{
-	if (firstchild->p_sib == NULL)
-	{
-		firstchild->p_sib = p;
-		p->p_parent = firstchild->p_parent;
-	} 
-	else
-		insertSibling(firstchild->p_sib, p);
+void debug(int a0, int a1) {
+	return;
 }
-
 
 /**
  * Inizializzazione della struttura del processo
@@ -89,23 +73,13 @@ void initPcb(struct pcb_t *p)
 void initPcbs(void)
 {
    static int cont = 0;
-
-   if (initialized == FALSE)
-   {
-       pcbfree_h = &(pcb_table[MAXPROC]);
-       pcbfree_h->p_next = pcbfree_h;
-       pcbfree_h->p_parent = NULL;
-       pcbfree_h->p_sib = NULL;
-       pcbfree_h->p_first_child = NULL;
-
-       initialized = TRUE;
-   }
-
+   	
    struct pcb_t *new = &(pcb_table[cont]);
    freePcb(new);
 
-   if (++cont == MAXPROC)
+   if (++cont == MAXPROC) {
    	return;
+   }
    else
    	initPcbs();
 }
@@ -117,8 +91,8 @@ void initPcbs(void)
  */
 void freePcb(struct pcb_t *p)
 {
-   p->p_next = pcbfree_h->p_next;
-   pcbfree_h->p_next = p;
+	p->p_next = pcbfree_h.p_next;
+   pcbfree_h.p_next = p;
 }
 
 /**
@@ -129,13 +103,13 @@ struct pcb_t *allocPcb(void)
 {
    struct pcb_t *new = NULL;
 	
-   if ((pcbfree_h)->p_next != pcbfree_h )
+   if (pcbfree_h.p_next != NULL)
    {
        // punto al primo processo in testa alla lista
-       new = (pcbfree_h)->p_next;
+       new = pcbfree_h.p_next;
 
        // rimozione del processo dalla lista
-       (pcbfree_h)->p_next = new->p_next;
+       pcbfree_h.p_next = new->p_next;
        initPcb(new);
    }
 
@@ -151,16 +125,14 @@ struct pcb_t *allocPcb(void)
  */
 void insertProcQ(struct pcb_t **head, struct pcb_t *p)
 {
-	while ((*head) != NULL)
-	{
-		if ((*head)->priority < p->priority)
-			break;
-		
-		head = &(*head)->p_next;
+	if ((*head)->priority > p->priority) {
+		insertProcQ(&(*head)->p_next, p);
 	}
-
-	p->p_next = *head;
-	*head = p;
+	else
+	{
+		p->p_next = *head;
+		*head = p;
+	}
 }
 
 /**
@@ -220,17 +192,36 @@ void forallProcQ(struct pcb_t *head, void fun(struct pcb_t *pcb, void *), void *
 	}
 }
 
+
+
 /**
- * Inserisce il pcb puntato da p come figlio del pcb puntato da parent
+ * funzione di supporto per insertChild() 
+ * Il processo "p" diventa fratello del processo "firstchild", 
+ * diventando cosi' figli dello stesso genitore.
+ */
+void insertSibling(struct pcb_t *firstchild, struct pcb_t *p)
+{
+	if (firstchild->p_sib == NULL)
+	{
+		firstchild->p_sib = p;
+		p->p_parent = firstchild->p_parent;
+	} 
+	else
+		insertSibling(firstchild->p_sib, p);
+}
+
+/**
+ * Inserisce il pcb puntato da ""p come figlio del processo "parent"
  */
 void insertChild(struct pcb_t *parent, struct pcb_t *p)
 {
-	if (parent->p_first_child == NULL){
+	if (parent->p_first_child == NULL)
+	{
 		parent->p_first_child = p;
 		p->p_parent = parent;
 	}
 	else
-		insertSibling(parent->p_first_child,p);   
+		insertSibling(parent->p_first_child, p);   
 }
 
 

@@ -26,4 +26,6 @@ void insertChild(struct pcb_t *parent, pcb_t *p);
 struct pcb_t* removeChild(struct pcb_t *p);
 struct pcb_t * outChild(pcb_t* p);
 
+void debug(int a0, int a1);
+
 #endif
