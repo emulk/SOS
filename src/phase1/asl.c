@@ -28,38 +28,7 @@ semd_t *semdFree_h;
 semd_t *semd_h;
 
 
-struct semd_t* Semd_ric(struct semd_t **tmp, int* key)
-{
-	if (*tmp == NULL)
-		return NULL;
-	
-	if ((*tmp)->s_key == key)
-		return *tmp;
-	else
-		return Semd_ric(&((*tmp)->s_next), key);
-}
-
-/**
- * Gestione della lista dei semd attivi
- */
-struct semd_t* getSemd(int *key)
-{
-	struct semd_t *tmp = semd_h;
-	
-	if (tmp == NULL)
-		return NULL;
-		
-	if (tmp->s_key == key)
-		return tmp;
-	else
-	{
-		tmp=tmp->s_next;
-		return Semd_ric(&tmp,key);    
-	}
-}
-
-void insert(struct semd_t **testa, struct semd_t *elemento)
-{
+HIDDEN void insert(struct semd_t **testa, struct semd_t *elemento){
         if(*testa == NULL){
                 *testa = elemento;
                 elemento->s_next=NULL;
@@ -68,6 +37,40 @@ void insert(struct semd_t **testa, struct semd_t *elemento)
                 return insert(&((*testa)->s_next),elemento);
         }
 }
+
+struct semd_t* Semd_ric(struct semd_t **tmp, int* key)
+{
+	if (*tmp == NULL){
+		return NULL;
+	}
+	if ((*tmp)->s_key == key){
+		return *tmp;
+	} else {
+		return Semd_ric(&((*tmp)->s_next), key);
+	}
+}
+
+/**
+ * Gestione della lista dei semd attivi
+ */
+
+struct semd_t* getSemd(int *key)
+{
+	semd_t *tmp;
+	tmp = semd_h;
+	
+	if (tmp == NULL){
+		return NULL;
+	}		
+	if (tmp->s_key == key){
+		return tmp;
+	} else{
+		tmp=tmp->s_next;
+		return Semd_ric(&tmp,key);    
+	}
+}
+
+
 
 /**
  * Inizializza la lista dei semdFree in modo da contenere tutti gli elementi 
@@ -94,48 +97,57 @@ struct semd_t *allocSem()
 	if(semdFree_h == NULL)
 		return NULL;
 	
-	struct semd_t *ptemp = semdFree_h;
+	semd_t *tmp;
+	tmp = semdFree_h;
 	semdFree_h = semdFree_h->s_next;
-	ptemp->s_next = NULL;
-	ptemp->s_key = NULL;
-	ptemp->s_procQ = NULL;
+	tmp->s_next = NULL;
+	tmp->s_key = NULL;
+	tmp->s_procQ = NULL;
 
-	return ptemp;   
+	return tmp;   
 
 }
 
-/**
- * Viene inserito il PCB puntato da p nella coda dei processi bloccati associata al
- * SEMD con chiave key. Se il semaforo corrispondente non e' presente nella ASL,
- * alloca un nuovo SEMD dalla lista di quelli liberi (semdFree) e lo inserisce nella
- * ASL, settando I campi inmaniera opportuna. Se non e’ possibile allocare un nuovo
- * SEMD perche’ la lista di quelli liberi e’ vuota, restituisce TRUE. In tutti gli altri
- * casi, restituisce FALSE.
- */
+
+
+ 
+/*Viene inserito il PCB puntato da p nella coda
+dei processi bloccati associata al SEMD con chiave key. Se
+il semaforo corrispondente non e’ presente nella ASL, alloca
+un nuovo SEMD dalla lista di quelli liberi (semdFree) e lo
+inserisce nella ASL, settando I campi in maniera opportuna. Se
+non e’ possibile allocare un nuovo SEMD perche’ la lista di
+quelli liberi e’ vuota, restituisce TRUE. In tutti gli altri casi,
+restituisce FALSE.
+*/
 int insertBlocked(int *key, pcb_t* p)
 {
-	struct semd_t *semd_target = getSemd(key);
+	semd_t *tmp;
+	p->p_next=NULL;
+	tmp = getSemd(key);
 	
-	if (semd_target == NULL)
+	if (tmp == NULL)
 	{
-		semd_target = allocSem(); 
+		tmp = allocSem(); 
 		
-		if (semd_target == NULL) 
+		if (tmp == NULL){ 
 			return TRUE;
-	
-		semd_target->s_key = key;
+		}
+		tmp->s_key = key;
 
-		insert(&semd_h, semd_target);
+		insert(&semd_h, tmp);
+		
 		p->p_semkey = key;
-		insertProcQ(&(semd_target->s_procQ), p);
+		insertProcQ(&(tmp->s_procQ), p);
+		
 	}
 	else
-		insertProcQ(&(semd_target->s_procQ), p); 
+		insertProcQ(&(tmp->s_procQ), p); 
 		
 	return FALSE;   
 }
 
-struct semd_t *deAllocSem(struct semd_t **semd_h, struct semd_t *sem)
+HIDDEN struct semd_t *RemRec(struct semd_t **semd_h, struct semd_t *sem)
 {
 	if(*semd_h == sem)
 	{
@@ -145,7 +157,7 @@ struct semd_t *deAllocSem(struct semd_t **semd_h, struct semd_t *sem)
 		return removed;
 	}
 	else
-		return deAllocSem(&((*semd_h)->s_next), sem);
+		return RemRec(&((*semd_h)->s_next), sem);
 }
 
 
@@ -159,18 +171,19 @@ struct semd_t *deAllocSem(struct semd_t **semd_h, struct semd_t *sem)
  */
 struct pcb_t* removeBlocked(int *key)
 {
-	struct semd_t *semd_target = getSemd(key);
+	semd_t *tmp;
+	pcb_t* rem;
+	tmp = getSemd(key);
 
-	if(semd_target)
-	{
-		pcb_t *removed = removeProcQ(&(semd_target->s_procQ));
-		if (semd_target->s_procQ == NULL)
-		deAllocSem(&semd_h, semd_target);
-		return removed;
-	}
-	else{
+	if(tmp == NULL){
 		return NULL;
+	}else{
+		rem = removeProcQ(&(tmp->s_procQ));
+		if (tmp->s_procQ == NULL)
+		RemRec(&semd_h, tmp);
+		return rem;
 	}
+	
 }
 
 /*[5]
@@ -212,7 +225,8 @@ Descrizione:richiama la funzione fun per ogni provesso
  bloccato sul semaforo identificato da key
 */
 void forallBlocked(int *key, void fun(struct pcb_t *pcb, void *), void *arg){
-        semd_t *tmp = getSemd(key);
+        semd_t *tmp;
+        tmp = getSemd(key);
         if ((tmp->s_procQ)==NULL){
 			return;
 		} else {

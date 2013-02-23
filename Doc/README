@@ -1,0 +1,8 @@
+SOS 2012/2013
+-------------------
+
+Per eseguire il progetto fare semplicemente "make", dopo di che sarà creato automaticamente il kernel.
+I files di umps2 sarano nella stessa cartella.
+
+DOCUMENTAZIONE:
+Fare riferimento alla cartella ./Doc

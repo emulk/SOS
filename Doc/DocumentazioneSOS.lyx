@@ -1,0 +1,254 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language italian
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+lso13az09 - Documentazione fase 1 progetto SOS 2012/2013
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Authors:
+\end_layout
+
+\begin_layout Author
+Orgest Shehaj <shehaj@cs.unibo.it> 
+\end_layout
+
+\begin_layout Author
+0000577768
+\end_layout
+
+\begin_layout Author
+Fabian Priftaj <priftaj@cs.unibo.it>
+\end_layout
+
+\begin_layout Author
+Eduart Uzeir <uzeir@cs.unibo.it>
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset index_print
+LatexCommand printindex
+type "idx"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Phase1
+\end_layout
+
+\begin_layout Standard
+La prima fase del progetto SOS (Strange Operating System) consiste nella
+ realizzazione del livello due del sistema operativo ideato da Dijkstra,
+ nel modello a 7 livelli, nel livello due si gestiscono le code dei processi
+ in esecuzione nel sistema operativo.
+\end_layout
+
+\begin_layout Standard
+La prima fase si compone in due moduli, Process Control Block (PCB), ed
+ Active Semaphore List (ASL)
+\end_layout
+
+\begin_layout Subsection
+pcb.c
+\end_layout
+
+\begin_layout Subsection
+asl.c
+\end_layout
+
+\begin_layout Standard
+Un semaforo è un tipo di dato astratto , gestito da un sistema operativo
+ multitasking per sincronizzare l'accesso a risorse condivise tra task.
+ 
+\end_layout
+
+\begin_layout Section
+Compilazione esecuzione di phase 1 
+\end_layout
+
+\begin_layout Standard
+Per compilare i vari moduli ed il test si utilizza il comando make.
+\end_layout
+
+\begin_layout Standard
+Per la pulizia della directory si utilizza il comando make clean.
+\end_layout
+
+\begin_layout Standard
+La prima fase di questo progetto prevede la definizione di alcune strutture
+ dati e metodi necessari per sviluppare la successiva fase di creazione
+ delle principali componenti di un Sistema Operativo ad architettura a MicroKern
+el.
+ 
+\end_layout
+
+\begin_layout Section
+Gestione dei pcb e delle code
+\end_layout
+
+\begin_layout Subsection
+Gestione dei pcb
+\end_layout
+
+\begin_layout Standard
+I pcb sono gestiti usando i concetti di coda.
+\end_layout
+
+\begin_layout Standard
+Tutti i pcb sono mantenuti in una struttura pcbFree_Table che fisicamente
+ si presenta come un array, ma logicamente permette una gestione avanzata
+ con code .
+\end_layout
+
+\begin_layout Standard
+Le code sono popolate da strutture pcb_t, composte da 7 campi: 
+\end_layout
+
+\begin_layout Subsection
+Gestione delle code
+\end_layout
+
+\begin_layout Standard
+In SOS si gestisce l'accesso alle risorse da parte di più processi contemporanea
+mente attraverso l'utilizzo dei semafori.
+ I semafori sono realizzati attraverso una struttura dati che fa da descrittore
+ (semd), la quale contiene i puntatori necessari a collegare il semaforo.
+\end_layout
+
+\begin_layout Standard
+In particolare utilizziamo due code.
+ Una coda e utilizzata per la gestione dei pcb occupati e una per i pcb
+ liberi.
+ 
+\end_layout
+
+\begin_layout Section
+Correzioni 
+\end_layout
+
+\begin_layout Standard
+Non sono state fatte correzioni ai files delle specifiche .
+\end_layout
+
+\begin_layout Section
+Directory
+\end_layout
+
+\begin_layout Standard
+I file e le direcotory sono organizzate nel modo seguente :
+\end_layout
+
+\begin_layout Standard
+./Doc/ Contiene la documentazione, il file Authors, il Readme, la licenza.
+\end_layout
+
+\begin_layout Standard
+./src/ Contiene a sua volta tre cartelle, include, modules e phase1
+\end_layout
+
+\begin_layout Standard
+./src/include/ Contiene i file di header
+\end_layout
+
+\begin_layout Standard
+./src/modules Contiene i file eiffel
+\end_layout
+
+\begin_layout Standard
+./src/phase1 Contiene pcb.c, asl.c e p1test.c
+\end_layout
+
+\end_body
+\end_document
