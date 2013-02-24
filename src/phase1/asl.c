@@ -66,8 +66,8 @@ struct semd_t* Semd_ric(struct semd_t **tmp, int* key)
 	}
 }
 
-/**
- * Cerco il semaforo
+/*[1]
+ * Cerco il semaforo il semaforo
  */
 
 struct semd_t* getSemd(int *key)
@@ -89,7 +89,7 @@ struct semd_t* getSemd(int *key)
 
 
 
-/**
+/**[2]
  * Inizializza la lista dei semdFree in modo da contenere tutti gli elementi 
  * della semdTable. Questo metodo viene invocato una volta sola durante 
  * l'inizializzazione della struttura dati.
@@ -129,7 +129,8 @@ struct semd_t *allocSem()
 
 
  
-/*Viene inserito il PCB puntato da p nella coda
+/*[3]
+ * Viene inserito il PCB puntato da p nella coda
 dei processi bloccati associata al SEMD con chiave key. Se
 il semaforo corrispondente non e’ presente nella ASL, alloca
 un nuovo SEMD dalla lista di quelli liberi (semdFree) e lo
@@ -166,11 +167,28 @@ int insertBlocked(int *key, pcb_t* p)
 	return FALSE;   
 }
 
+/*[4]
+ * restituisce il puntatore al pcb del primo processo bloccato sul semaforo, senza deaccordarlo.
+ * Se il semaforo non esiste restituisce null*/
+
+pcb_t *headBlocked(int *key){
+	semd_t *tmp;
+	tmp = getSemd(key);
+	/*se il semaforo non esiste*/
+	if(tmp == NULL){
+		return NULL;
+	} else {
+		return tmp->s_procQ;
+	}
+}
+	
+	
+	
+	
+	
 
 
-
-
-/**
+/**[5]
  * Ritorna il primo PCB dalla coda dei processi bloccati (s_ProcQ) associata al SEMD
  * della ASL con chiave key. Se tale descrittore non esiste nella ASL, restituisce NULL.
  * Altrimenti, restituisce l’elemento rimosso. Se la coda dei processi bloccati per il
@@ -194,7 +212,7 @@ struct pcb_t* removeBlocked(int *key)
 	
 }
 
-/*
+/*[6]
  * rimuove il pcb puntato da p dalla coda dei processi*/
 pcb_t* outBlocked(pcb_t *p){
 	semd_t *tmp;
@@ -211,7 +229,8 @@ pcb_t* outBlocked(pcb_t *p){
 
 
 
-/*Rimuove il PCB puntato da p
+/*[7]
+ * Rimuove il PCB puntato da p
 	dalla coda del semaforo su cui e’ bloccato, termina anche tutti i processi discendenti
 */
 void outChildBlocked(pcb_t *p){
@@ -228,7 +247,7 @@ void outChildBlocked(pcb_t *p){
 
 
 
-/*[7]
+/*[8]
 Descrizione:richiama la funzione fun per ogni provesso
  bloccato sul semaforo identificato da key
 */

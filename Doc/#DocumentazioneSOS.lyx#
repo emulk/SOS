@@ -84,11 +84,19 @@ Orgest Shehaj <shehaj@cs.unibo.it>
 \end_layout
 
 \begin_layout Author
-Fabian Priftaj <priftaj@cs.unibo.it>
+Fabian Priftaj <priftaj@cs.unibo.it> 
 \end_layout
 
 \begin_layout Author
-Eduart Uzeir <uzeir@cs.unibo.it>
+090020667
+\end_layout
+
+\begin_layout Author
+Eduart Uzeir <uzeir@cs.unibo.it> 
+\end_layout
+
+\begin_layout Author
+0000355667
 \end_layout
 
 \begin_layout Standard
@@ -144,6 +152,18 @@ La prima fase si compone in due moduli, Process Control Block (PCB), ed
 pcb.c
 \end_layout
 
+\begin_layout Standard
+In questo modulo vengono gestite tre prati diverse del sistema operativo.
+ Una parte relativa all'allocazione e alla deallocazione, una parte relativa
+ alle code dei processi e una terza parte che gestisce gli alberi.
+ 
+\end_layout
+
+\begin_layout Standard
+Ogni parte contiene delle funzioni che compiono delle semplici operazioni
+ sulle liste.
+\end_layout
+
 \begin_layout Subsection
 asl.c
 \end_layout
@@ -193,7 +213,100 @@ Tutti i pcb sono mantenuti in una struttura pcbFree_Table che fisicamente
 \end_layout
 
 \begin_layout Standard
-Le code sono popolate da strutture pcb_t, composte da 7 campi: 
+Le code sono popolate da strutture pcb_t, composte da 7 campi: che servono
+ per la gestione dei processi.
+\end_layout
+
+\begin_layout Standard
+void initPcbs(void): 
+\end_layout
+
+\begin_layout Standard
+Inizializza la pcbFree in modo da contenere tutti gli elementi della pcbFree_tab
+le.
+ 
+\end_layout
+
+\begin_layout Standard
+void freePcb(pcb_t *p): 
+\end_layout
+
+\begin_layout Standard
+Inserisce il PCB puntato da p nella lista dei PCB liberi 
+\end_layout
+
+\begin_layout Standard
+pcb_t *allocPcb(void):
+\end_layout
+
+\begin_layout Standard
+Restituisce NULL se la pcbFree e’ vuota.
+ Altrimenti rimuove un elemento dalla pcbFree, inizializza tutti i campi
+ (NULL/0) e restituisce l’elemento rimosso.
+ 
+\end_layout
+
+\begin_layout Standard
+void insertProcQ( pcb_t **head, pcb_t* p):
+\end_layout
+
+\begin_layout Standard
+inserisce l’elemento puntato da p nella coda dei processi puntata da head.
+ L’inserimento deve avvenire tenendo conto della priorita’ di ciascun pcb
+ 
+\end_layout
+
+\begin_layout Standard
+pcb_t* headProcQ(pcb_t* head): 
+\end_layout
+
+\begin_layout Standard
+Restituisce l’elemento di testa della coda dei processi da head .
+\end_layout
+
+\begin_layout Standard
+pcb_t* removeProcQ( pcb_t** head): 
+\end_layout
+
+\begin_layout Standard
+rimuove il primo elemento dalla coda dei processi puntata da head.
+ 
+\end_layout
+
+\begin_layout Standard
+pcb_t* outProcQ( pcb_t** head, pcb_t *p):
+\end_layout
+
+\begin_layout Standard
+Rimuove il PCB puntato da p dalla coda dei processi puntata da head 
+\end_layout
+
+\begin_layout Standard
+void forallProcQ(struct pcb_t *head, void fun(struct pcb_t *pcb, void *),
+ void *arg): richiama la funzione fun per ogni elemento della lista puntata
+ da head 
+\end_layout
+
+\begin_layout Standard
+void insertChild(pcb_t *parent, pcb_t *p): Inserisce il PCB puntato da p
+ come figlio del pcb puntato da parent.
+ 
+\end_layout
+
+\begin_layout Standard
+pcb_t* removeChild(pcb_t *p): Rimuove il primo figlio del PCB puntato da
+ p.
+ Se p non ha figli, restituisce NULL.
+ 
+\end_layout
+
+\begin_layout Standard
+pcb_t * outChild(pcb_t* p): Rimuove il PCB puntato da p dalla lista dei
+ figli del padre.
+ Se il PCB puntato da p non ha un padre, res*tuisce NULL.
+ Altrimenti restituisce l’elemento rimosso (cioe’ p).
+ A differenza della removeChild, p puo’ trovarsi in una posizione arbitraria
+ .
 \end_layout
 
 \begin_layout Subsection
@@ -214,6 +327,81 @@ In particolare utilizziamo due code.
  
 \end_layout
 
+\begin_layout Standard
+semd_t* getSemd(int *key):
+\end_layout
+
+\begin_layout Standard
+void initASL():
+\end_layout
+
+\begin_layout Standard
+Inizializza la lista dei semdFree in modo da contenere tutti gli elementi
+ della semdTable.
+ 
+\end_layout
+
+\begin_layout Standard
+int insertBlocked(int *key, pcb_t* p): 
+\end_layout
+
+\begin_layout Standard
+Viene inserito il PCB puntato da p nella coda dei processi bloccati associata
+ al SEMD con chiave key.
+ Se il semaforo corrispondente non e’ presente nella ASL, alloca un nuovo
+ SEMD dalla lista di quelli liberi (semdFree) e lo inserisce nella ASL,
+ settando I campi in maniera opportuna.
+ Se non e’ possibile allocare un nuovo SEMD perche’ la lista di quelli liberi
+ e’ vuota, restituisce TRUE.
+ In tutti gli altri casi, restituisce FALSE.
+ 
+\end_layout
+
+\begin_layout Standard
+pcb_t* removeBlocked(int *key):
+\end_layout
+
+\begin_layout Standard
+Ritorna il primo PCB dalla coda dei processi bloccanti (s_ProcQ) associata
+ al SEMD della ASL con chiave key.
+ 
+\end_layout
+
+\begin_layout Standard
+pcb_t* outBlocked(pcb_t *p): rimuove il pcb puntato da p dalla coda dei
+ processi
+\end_layout
+
+\begin_layout Standard
+pcb_t* headBlocked(int *key): 
+\end_layout
+
+\begin_layout Standard
+restituisce il puntatore al pcb del primo processo bloccato sul semaforo,
+ senza deaccordarlo.
+ 
+\end_layout
+
+\begin_layout Standard
+void outChildBlocked(pcb_t *p):
+\end_layout
+
+\begin_layout Standard
+Rimuove il PCB puntato da p dalla coda del semaforo su cui e’ bloccato ,
+ termina anche tutti i processi discendenti
+\end_layout
+
+\begin_layout Standard
+void forallBlocked(int *key, void fun(struct pcb_t *pcb, void *), void *arg):
+ 
+\end_layout
+
+\begin_layout Standard
+richiama la funzione fun per ogni processo bloccato sul semaforo identificato
+ da key.
+ 
+\end_layout
+
 \begin_layout Section
 Correzioni 
 \end_layout
@@ -231,7 +419,27 @@ I file e le direcotory sono organizzate nel modo seguente :
 \end_layout
 
 \begin_layout Standard
+./Doc/ Contiene la documentazione, il file Authors, il Readme, la licenza.
+\end_layout
 
+\begin_layout Standard
+./src/ Contiene a sua volta tre cartelle, include, modules e phase1
+\end_layout
+
+\begin_layout Standard
+./src/include/ Contiene i file di header
+\end_layout
+
+\begin_layout Standard
+./src/modules Contiene i file eiffel
+\end_layout
+
+\begin_layout Standard
+./src/phase1 Contiene pcb.c, asl.c e p1test.c
+\end_layout
+
+\begin_layout Section
+Source code
 \end_layout
 
 \end_body

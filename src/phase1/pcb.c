@@ -40,7 +40,7 @@ HIDDEN void InitPcbs(pcb_t **head){
 	else InitPcbs(&(*head)->p_next);
 }
 
-HIDDEN reset(pcb_t *p){
+HIDDEN void reset(pcb_t *p){
 	/*inizializzo tutti i 6 campi a NULL/0*/
 	p->p_next=NULL;
 	p->p_parent=NULL;
@@ -61,18 +61,17 @@ HIDDEN void insert(struct semd_t **testa, struct semd_t *elemento){
         }
 }
 
-/*Inizializza la pcbFree in
-modo da contenere tutti gli elementi della
-pcbFree_table. Questo metodo deve
-essere chiamato una volta sola in fase
-di inizializzazione della struttura dati.
+/*[1]
+ * Inizializza la pcbFree in modo da contenere tutti gli elementi della 
+ * pcbFree_table. Questo metodo deve 
+ * essere chiamato una volta sola in fase di inizializzazione della struttura dati.
 */
 void initPcbs(void){
 	InitPcbs(&pcbfree_h);
 }
 
-/*Inserisce il PCB puntato
-da p nella lista dei PCB liberi (pcbFree)
+/*[2]
+ * Inserisce il PCB puntato da p nella lista dei PCB liberi (pcbFree)
 */
 void freePcb(pcb_t *p){
 	/*chiamo la insertProcQ , che prende in input la sentinella e il processo
@@ -80,11 +79,10 @@ void freePcb(pcb_t *p){
 	insertProcQ(&pcbfree_h, p);
 }
 
-/*Restituisce NULL se la
-pcbFree e’ vuota. Altrimenti rimuove un
-elemento dalla pcbFree, inizializza tutti i
-campi (NULL/0) e restituisce l’elemento
-rimosso.
+/*[3]
+ * Restituisce NULL se la pcbFree e’ vuota. Altrimenti rimuove un 
+ * elemento dalla pcbFree, inizializza tutti i 
+ * campi (NULL/0) e restituisce l’elemento rimosso.
 */
 pcb_t *allocPcb(void){
 	pcb_t *tmp;
@@ -97,11 +95,11 @@ pcb_t *allocPcb(void){
 	return tmp;
 }
 
-/*inserisce l’elemento puntato da p nella coda dei
-processi puntata da head. L’inserimento deve avvenire tenendo
-conto della priorita’ di ciascun pcb (campo p--‐>priority).
-La coda dei processi deve essere ordinata in base alla priorita’
-dei PCB, in ordine decrescente
+/* [4]
+ * inserisce l’elemento puntato da p nella coda dei 
+ * processi puntata da head. L’inserimento deve avvenire tenendo 
+ * conto della priorita’ di ciascun pcb (campo p--‐>priority). 
+ * La coda dei processi deve essere ordinata in base alla priorita’ dei PCB, in ordine decrescente
 */
 void insertProcQ(struct pcb_t **head, pcb_t *p){
 	if((*head)->priority>p->priority){
@@ -114,9 +112,9 @@ void insertProcQ(struct pcb_t **head, pcb_t *p){
 	}
 }
 
-/*Restituisce l’elemento di testa della coda dei
-processi da head, SENZA RIMUOVERLO. Ritorna NULL se la
-coda non ha elementi.
+/* [5 ]
+ * Restituisce l’elemento di testa della coda dei 
+ * processi da head, SENZA RIMUOVERLO. Ritorna NULL se la coda non ha elementi.
 */
 pcb_t *headProcQ(pcb_t *head){
 	/*se la coda non ha elementi*/
@@ -127,9 +125,10 @@ pcb_t *headProcQ(pcb_t *head){
 	}
 }
 
-/*rimuove il primo elemento dalla coda dei processi
-puntata da head. Ritorna NULL se la coda e’ vuota. Altrimenti ritorna
-il puntatore all’elemento rimosso dalla lista.
+/* [6]
+ * rimuove il primo elemento dalla coda dei processi 
+ * puntata da head. Ritorna NULL se la coda e’ vuota. Altrimenti ritorna 
+ * il puntatore all’elemento rimosso dalla lista.
 */
 pcb_t *removeProcQ(pcb_t **head){
 	/*se la coda e vuota*/
@@ -138,8 +137,9 @@ pcb_t *removeProcQ(pcb_t **head){
 	return outProcQ(head, headProcQ(*head));
 }
 
-/*Rimuove il PCB puntato da p dalla coda dei processi
-puntata da head. Se p non e’ presente nella coda, restituisce NULL.
+/*[7]
+ * Rimuove il PCB puntato da p dalla coda dei processi 
+ * puntata da head. Se p non e’ presente nella coda, restituisce NULL.
 */
 pcb_t *outProcQ(pcb_t **head, pcb_t *p){
 	if((*head)!=NULL){
@@ -156,7 +156,8 @@ pcb_t *outProcQ(pcb_t **head, pcb_t *p){
 }
 
 
-/*richiama la funzione fun per ogni elemento della lista puntata da head.
+/* [8]
+ * richiama la funzione fun per ogni elemento della lista puntata da head.
 */
 void forallProcQ(struct pcb_t *head, void fun(struct pcb_t *pcb, void *), void *arg){
 	if(head!=NULL){
@@ -168,7 +169,8 @@ void forallProcQ(struct pcb_t *head, void fun(struct pcb_t *pcb, void *), void *
 
 /*-------------------------------------------ALBERI------------------------------------------------------*/
 
-/*Inserisce il PCB puntato da p come figlio del PCB puntato da parent.
+/*[9]
+ * Inserisce il PCB puntato da p come figlio del PCB puntato da parent.
 */
 void insertChild(pcb_t *parent, pcb_t *p){
 	if(p!=NULL && parent!=NULL){
@@ -181,7 +183,8 @@ void insertChild(pcb_t *parent, pcb_t *p){
 	}
 }
 
-/*Rimuove il primo figlio del PCB puntato da p. Se p non ha figli, restituisce NULL
+/*[10]
+ * Rimuove il primo figlio del PCB puntato da p. Se p non ha figli, restituisce NULL
 */
 pcb_t *removeChild(pcb_t *p){
 	pcb_t *tmp;
@@ -195,11 +198,10 @@ pcb_t *removeChild(pcb_t *p){
 	return NULL;
 }
 
-/*Rimuove il PCB puntato da p dalla lista dei
-figli del padre. Se il PCB puntato da p non ha un
-padre, res*tuisce NULL. Altrimenti restituisce l’elemento
-rimosso (cioe’ p). A differenza della removeChild, p puo’
-trovarsi in una posizione arbitraria
+/*[11]
+ * Rimuove il PCB puntato da p dalla lista dei figli del padre. Se il PCB puntato da p non ha un 
+ * padre, res*tuisce NULL. Altrimenti restituisce l’elemento 
+ * rimosso (cioe’ p). A differenza della removeChild, p puo’ trovarsi in una posizione arbitraria
 */
 pcb_t *outChild(pcb_t *p){
 	/*se p non ha padre*/
