@@ -20,8 +20,11 @@
 
 
 #include <pcb.e>
+/*Lista dei pcb che sono liberi o inutilizzati */
 pcb_t pcbfree;
+/*testa della lista pcbfree*/
 pcb_t* pcbfree_h=&pcbfree;
+/*array di pcb con dimensione massima di MAXPROC (20)*/
 pcb_t pcbFree_table[MAXPROC];
 
 /* implementazione ricorsiva*/
@@ -31,12 +34,14 @@ HIDDEN void InitPcbs(pcb_t **head){
 	i++;
 	(*head)=pcbFree_table+i;
 	(*head)->p_next=NULL;
+	/*se i e uguale o maggiore di 20, ho finito */
 	if(i>MAXPROC-1) return;
+	/*altrimenti chiamo la ricorsione*/
 	else InitPcbs(&(*head)->p_next);
 }
 
 HIDDEN reset(pcb_t *p){
-	
+	/*inizializzo tutti i 6 campi a NULL/0*/
 	p->p_next=NULL;
 	p->p_parent=NULL;
 	p->p_first_child=NULL;
@@ -45,13 +50,15 @@ HIDDEN reset(pcb_t *p){
 	p->p_semkey=NULL;
 }
 
-HIDDEN void insert(struct pcb_t **head,pcb_t *p){
-	if((*head)!=NULL){
-		insert(&(*head)->p_next,p);
-	} else {
-		(*head)=p;
-		p->p_next=NULL;
-	}
+/*Inserisco p nella coda dei processi puntata da head*/
+HIDDEN void insert(struct semd_t **testa, struct semd_t *elemento){
+        if(*testa == NULL){
+                *testa = elemento;
+                elemento->s_next=NULL;
+                return ;
+        } else {
+                return insert(&((*testa)->s_next),elemento);
+        }
 }
 
 /*Inizializza la pcbFree in
@@ -68,7 +75,8 @@ void initPcbs(void){
 da p nella lista dei PCB liberi (pcbFree)
 */
 void freePcb(pcb_t *p){
-	reset(p);
+	/*chiamo la insertProcQ , che prende in input la sentinella e il processo
+	 * ed inserisce il processo puntato da p nella lista dei pcb liberi*/
 	insertProcQ(&pcbfree_h, p);
 }
 
@@ -79,12 +87,14 @@ campi (NULL/0) e restituisce l’elemento
 rimosso.
 */
 pcb_t *allocPcb(void){
-	pcb_t *out;
-	out=removeProcQ(&pcbfree_h);
-	if (out==NULL)
+	pcb_t *tmp;
+	tmp=removeProcQ(&pcbfree_h);
+	/*se la pcbFree e vuota restituisco NULL*/
+	if (tmp==NULL)
 		return NULL;
-	reset(out);
-	return out;
+	/*dopo aver rimosso un elemento dalla pcbFree reseto tutti i campi a NULL/0*/
+	reset(tmp);
+	return tmp;
 }
 
 /*inserisce l’elemento puntato da p nella coda dei
@@ -95,10 +105,12 @@ dei PCB, in ordine decrescente
 */
 void insertProcQ(struct pcb_t **head, pcb_t *p){
 	if((*head)->priority>p->priority){
+		/*scorro la coda*/
 		insertProcQ(&(*head)->p_next,p);
 	} else {
-		p->p_next=*head;
-		*head=p;
+		/*arrivato alla posizione giusta faccio l'inserimento*/
+		p->p_next=(*head);
+		(*head)=p;
 	}
 }
 
@@ -107,7 +119,12 @@ processi da head, SENZA RIMUOVERLO. Ritorna NULL se la
 coda non ha elementi.
 */
 pcb_t *headProcQ(pcb_t *head){
-	return head;
+	/*se la coda non ha elementi*/
+	if(head == NULL){
+		return NULL;
+	} else {
+		return head;
+	}
 }
 
 /*rimuove il primo elemento dalla coda dei processi
@@ -115,6 +132,7 @@ puntata da head. Ritorna NULL se la coda e’ vuota. Altrimenti ritorna
 il puntatore all’elemento rimosso dalla lista.
 */
 pcb_t *removeProcQ(pcb_t **head){
+	/*se la coda e vuota*/
 	if (*head==NULL)
 		return NULL;
 	return outProcQ(head, headProcQ(*head));
@@ -128,13 +146,12 @@ pcb_t *outProcQ(pcb_t **head, pcb_t *p){
 		if(*head==p){
 			(*head)=(*head)->p_next;
 			return p;
+		} else  {
+			/*scorro la coda , se non trovo p nella prima posizione*/
+			return outProcQ(&(*head)->p_next, p);
 		}
-		else if((*head)->p_next==p){
-			(*head)->p_next=p->p_next;
-			return p;
-		}
-		return outProcQ(&(*head)->p_next, p);
 	}
+	/*se la coda e vuota, restituisco NULL*/
 	return NULL;
 }
 
@@ -149,25 +166,32 @@ void forallProcQ(struct pcb_t *head, void fun(struct pcb_t *pcb, void *), void *
 	return;
 }
 
+/*-------------------------------------------ALBERI------------------------------------------------------*/
 
-/*Inserisce il PCB puntato da parent.
+/*Inserisce il PCB puntato da p come figlio del PCB puntato da parent.
 */
 void insertChild(pcb_t *parent, pcb_t *p){
 	if(p!=NULL && parent!=NULL){
 		p->p_parent=parent;
 		insert(&parent->p_first_child, p);
+	} else {
+		parent->p_first_child = p;
+		p->p_parent = parent;
+		p->p_sib = NULL;
 	}
 }
 
 /*Rimuove il primo figlio del PCB puntato da p. Se p non ha figli, restituisce NULL
 */
 pcb_t *removeChild(pcb_t *p){
+	pcb_t *tmp;
 	if (p!=NULL){
-		pcb_t *out=removeProcQ(&p->p_first_child);
-		if(out!=NULL)
-			out->p_parent=NULL;
-		return out;
+		tmp=removeProcQ(&p->p_first_child);
+		if(tmp!=NULL)
+			tmp->p_parent=NULL;
+		return tmp;
 	}
+	/*se p non ha figli*/
 	return NULL;
 }
 
@@ -178,6 +202,7 @@ rimosso (cioe’ p). A differenza della removeChild, p puo’
 trovarsi in una posizione arbitraria
 */
 pcb_t *outChild(pcb_t *p){
+	/*se p non ha padre*/
 	if(p->p_parent==NULL)
 		return NULL;
 	pcb_t *parent=p->p_parent;

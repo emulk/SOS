@@ -34,9 +34,25 @@ HIDDEN void insert(struct semd_t **testa, struct semd_t *elemento){
                 elemento->s_next=NULL;
                 return ;
         } else {
-                return insert(&((*testa)->s_next),elemento);
+			/*scorro*/
+               return insert(&((*testa)->s_next),elemento);
         }
 }
+
+
+HIDDEN struct semd_t *RemRec(struct semd_t **semd_h, struct semd_t *sem)
+{
+	if(*semd_h == sem)
+	{
+		semd_t *removed = sem;
+		*semd_h = sem->s_next;
+		insert(&semdFree_h, sem);
+		return removed;
+	}
+	else
+		return RemRec(&((*semd_h)->s_next), sem);
+}
+
 
 struct semd_t* Semd_ric(struct semd_t **tmp, int* key)
 {
@@ -51,17 +67,18 @@ struct semd_t* Semd_ric(struct semd_t **tmp, int* key)
 }
 
 /**
- * Gestione della lista dei semd attivi
+ * Cerco il semaforo
  */
 
 struct semd_t* getSemd(int *key)
 {
 	semd_t *tmp;
 	tmp = semd_h;
-	
+	/*se non c'e ne sono di semafori attivi, restituisco null*/
 	if (tmp == NULL){
 		return NULL;
 	}		
+	/*se il semaforo cercato e in prima posizione*/
 	if (tmp->s_key == key){
 		return tmp;
 	} else{
@@ -80,7 +97,7 @@ struct semd_t* getSemd(int *key)
 void initASL()
 {
 	static int i = 0;
-	
+	/*da 0 a 19*/
 	if (i > MAXPROC-1)
 		return;
 	else
@@ -94,6 +111,7 @@ void initASL()
 
 struct semd_t *allocSem()
 {
+	/*se la lista dei semd liberi e vuota*/
 	if(semdFree_h == NULL)
 		return NULL;
 	
@@ -125,11 +143,12 @@ int insertBlocked(int *key, pcb_t* p)
 	semd_t *tmp;
 	p->p_next=NULL;
 	tmp = getSemd(key);
-	
+	/*se il semaforo non esiste*/
 	if (tmp == NULL)
 	{
+		/**/
 		tmp = allocSem(); 
-		
+		/*se la lista dei semd liberi e vuota*/
 		if (tmp == NULL){ 
 			return TRUE;
 		}
@@ -141,24 +160,13 @@ int insertBlocked(int *key, pcb_t* p)
 		insertProcQ(&(tmp->s_procQ), p);
 		
 	}
-	else
+	else 
 		insertProcQ(&(tmp->s_procQ), p); 
 		
 	return FALSE;   
 }
 
-HIDDEN struct semd_t *RemRec(struct semd_t **semd_h, struct semd_t *sem)
-{
-	if(*semd_h == sem)
-	{
-		semd_t *removed = sem;
-		*semd_h = sem->s_next;
-		insert(&semdFree_h, sem);
-		return removed;
-	}
-	else
-		return RemRec(&((*semd_h)->s_next), sem);
-}
+
 
 
 
@@ -186,13 +194,14 @@ struct pcb_t* removeBlocked(int *key)
 	
 }
 
-/*[5]
-Descrizione:*/
+/*
+ * rimuove il pcb puntato da p dalla coda dei processi*/
 pcb_t* outBlocked(pcb_t *p){
 	semd_t *tmp;
 	pcb_t *temp;
 	tmp = getSemd(p->p_semkey);
 	temp = outProcQ(&(tmp->s_procQ), p);
+	/*se non esiste*/
 	if(temp==NULL){
 		return NULL;
 	}else{
@@ -202,9 +211,8 @@ pcb_t* outBlocked(pcb_t *p){
 
 
 
-/*[6]
-Descrizione:Rimuove il PCB puntato da p
-	dalla coda del semaforo su cui e’ bloccato
+/*Rimuove il PCB puntato da p
+	dalla coda del semaforo su cui e’ bloccato, termina anche tutti i processi discendenti
 */
 void outChildBlocked(pcb_t *p){
 	semd_t *tmp;
